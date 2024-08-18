@@ -25,6 +25,10 @@ EXTRACT_MESSAGES = [
                 Location(city='New York', state='New York'), \
                 Location(city='Chicago', state='Illinois') \
             ] \
+            Optionally, if instructions are specified, only return those instances \
+            that meet the requirements of the instructions. For example, if in the \
+            above example, if the instructions are 'locations on the east coast', you \
+            would only return the model for New York. \
             Please only return the response to the query without any extra language."
     }
 ]

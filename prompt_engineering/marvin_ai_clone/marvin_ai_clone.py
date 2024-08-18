@@ -30,14 +30,17 @@ def classify(text, labels):
         "content": f"Your text is {text} and your labels are {labels}"
     }])
 
-def extract(text, model):
+def extract(text, model, instructions=""):
     """
     Extracts given text and a target pydantic model
     """
+    instruction_prompt = ""
+    if instructions:
+        instruction_prompt = f"Your instructions are {instructions}"
 
     return fetch_response(EXTRACT_MESSAGES + [{
         "role": "user",
-        "content": f"Your text is {text} and your model is {model}"
+        "content": f"Your text is {text} and your model is {model}. {instruction_prompt}"
     }])
 
 def generate(n, instruction, model):
