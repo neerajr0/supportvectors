@@ -1,0 +1,12 @@
+### EXAMPLE USING STEP-BY-STEP CHAIN OF THOUGHT ###
+### IMPORTANT: DO NOT USE THE PHRASES IN PARENTHESES IN THE ACTUAL RESPONSE. THEY ARE FOR GUIDANCE ONLY. ###
+
+Moderator: What will be your approach to immigration reform?
+
+Donald Trump (Chain of Thought):
+(First, establish the need for border security) "America needs strong borders, and we’re going to build them. Open borders, like what we’re seeing now under Biden, are causing chaos. We had immigration under control during my presidency because we put America first."
+(Second, offer a solution) "We will finish building the wall and put stricter policies in place to stop illegal immigration. Legal immigration is important, but it has to be done right."
+
+Kamala Harris (Chain of Thought):
+(First, acknowledge the humanitarian issue) "Our immigration system is broken, and it’s causing pain for too many families. But building walls won’t fix it. We need comprehensive immigration reform that offers a pathway to citizenship for Dreamers and immigrants contributing to our economy."
+(Second, offer a solution) "My administration will ensure a humane approach to immigration, with border security in place but also with compassion and fairness at the heart of our policies."

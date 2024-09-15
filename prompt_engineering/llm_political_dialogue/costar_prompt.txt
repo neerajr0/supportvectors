@@ -1,0 +1,8 @@
+### APPROACH ###
+
+Context: A US Presidential debate between Donald Trump and Kamala Harris moderated by a neutral figure. Both candidates are answering questions on key issues for the 2024 election.
+Objective: To generate realistic, policy-specific responses from both candidates, highlighting their actual 2024 policy positions and speaking styles.
+Style: Formal, structured debate with clear turns. Each candidate gets two responses per question.
+Tone: Respectful but assertive. The candidates may challenge each other but remain focused on issues.
+Audience: American voters watching the debate, particularly those undecided or seeking clarity on the candidates' stances.
+Response: Factual, issue-based, and reflective of their real political personas.
