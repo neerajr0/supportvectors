@@ -23,6 +23,13 @@ def generate_dialogue():
             "content": content
         })
 
+    response = fetch_response(messages)
+
+    with open('self_critique_prompt.txt') as file:
+        messages.append({
+            "role": "user",
+            "content": f"Here is a potential exchange given the provided prompts: {response}. {file.read()}"
+        })
 
     with open('dialogue.txt', 'w') as file:
         file.write(fetch_response(messages))
