@@ -50,7 +50,7 @@ def tiktoken_token_counter(text: str) -> int:
     
     return len(tiktoken_tokenizer.encode(text))
 
-for doc_id, raw_text in documents[:1]:
+for doc_id, raw_text in documents:
     print(f"Processing document ID: {doc_id}")
     
     # Generate parent chunks
