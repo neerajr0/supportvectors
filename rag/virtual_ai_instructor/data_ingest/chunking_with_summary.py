@@ -7,6 +7,7 @@ We create a new table abstractive_summary with the following schema:
     - parent_chunk_id (id of the parent chunk of this chunk)
     - sequence_id (id path from root to self)
     - chunk_text (the text of the chunk)
+    - chunk_summary (the summarized text of the chunk using GPT-4)
 """
 
 import sqlite3
