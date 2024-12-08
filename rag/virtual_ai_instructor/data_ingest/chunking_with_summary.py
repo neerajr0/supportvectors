@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS abstractive_summary (
     parent_chunk_id TEXT,
     sequence_id TEXT NOT NULL,
     chunk_text TEXT NOT NULL,
+    chunk_summary TEXT NOT NULL,
     FOREIGN KEY (doc_id) REFERENCES document (id)
 )
 ''')
@@ -76,36 +77,39 @@ def summarize_text(raw_text):
 
 for doc_id, raw_text in documents[:5]:
     print(f"Processing document ID: {doc_id}")
-
-    # Get the summary from the document
-    # Summarize the raw text using GPT-4
-    summary = summarize_text(raw_text)
     
     # Generate parent chunks
-    parent_chunks = chunk(summary, chunk_size=PARENT_CHUNK_SIZE, token_counter=tiktoken_token_counter)
+    parent_chunks = chunk(raw_text, chunk_size=PARENT_CHUNK_SIZE, token_counter=tiktoken_token_counter)
     
     for i, parent_chunk in enumerate(parent_chunks):
-        parent_chunk_id = str(uuid.uuid4())
+        # parent chunk is doc_id plus index of chunk so we can derive chunk order
+        parent_chunk_id = doc_id + "#" + str(i)
         sequence_id = parent_chunk_id  # Root level has only its own ID
+
+        # Summarize the chunk using GPT-4
+        parent_chunk_summary = summarize_text(parent_chunk)
         
         # Insert the parent chunk into the database
         cursor.execute('''
-        INSERT INTO abstractive_summary (id, doc_id, parent_chunk_id, sequence_id, chunk_text)
+        INSERT INTO abstractive_summary (id, doc_id, parent_chunk_id, sequence_id, chunk_text, chunk_summary)
         VALUES (?, ?, ?, ?, ?)
-        ''', (parent_chunk_id, doc_id, None, sequence_id, parent_chunk))
+        ''', (parent_chunk_id, doc_id, None, sequence_id, parent_chunk, parent_chunk_summary))
         
         # Generate child chunks for the parent chunk
         child_chunks = chunk(parent_chunk, chunk_size=CHILD_CHUNK_SIZE, token_counter=tiktoken_token_counter)
         
         for j, child_chunk in enumerate(child_chunks):
-            child_chunk_id = str(uuid.uuid4())
-            child_sequence_id = sequence_id + "#" + child_chunk_id  # Append to parent sequence ID
+            # child chunk is doc_id plus index of parent chunk plus index of child chunk
+            child_chunk_id = parent_chunk_id + "#" + str(j)
+            child_sequence_id = child_chunk_id
+
+            child_chunk_summary = summarize_text(child_chunk)
             
             # Insert the child chunk into the database
             cursor.execute('''
-            INSERT INTO abstractive_summary (id, doc_id, parent_chunk_id, sequence_id, chunk_text)
+            INSERT INTO abstractive_summary (id, doc_id, parent_chunk_id, sequence_id, chunk_text, chunk_summary)
             VALUES (?, ?, ?, ?, ?)
-            ''', (child_chunk_id, doc_id, parent_chunk_id, child_sequence_id, child_chunk))
+            ''', (child_chunk_id, doc_id, parent_chunk_id, child_sequence_id, child_chunk, child_chunk_summary))
     
     print(f"Finished processing document ID: {doc_id}")
 
@@ -114,10 +118,10 @@ conn.commit()
 
 # Print the contents of the abstractive_summary table
 print("\nAbstractive Summary Table Contents:")
-cursor.execute('SELECT id, doc_id, parent_chunk_id, sequence_id, chunk_text FROM abstractive_summary')
+cursor.execute('SELECT id, doc_id, parent_chunk_id, sequence_id, chunk_text, chunk_summary FROM abstractive_summary')
 rows = cursor.fetchall()
 for row in rows:
-    print(f"ID: {row[0]}, Doc ID: {row[1]}, Parent Chunk ID: {row[2]}, Sequence ID: {row[3]}, Chunk Text: {row[4][:50]}...")  # Truncate text for readability
+    print(f"ID: {row[0]}, Doc ID: {row[1]}, Parent Chunk ID: {row[2]}, Sequence ID: {row[3]}, Chunk Text: {row[4][:50]}..., Chunk Text Summary: {row[5][:50]}")  # Truncate text for readability
 
 # Close the database connection
 conn.close()
