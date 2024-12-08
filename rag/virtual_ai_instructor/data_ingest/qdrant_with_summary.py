@@ -28,15 +28,23 @@ conn = sqlite3.connect(db_file)
 cursor = conn.cursor()
 
 # Fetch all chunks from the abstractive_summary table
-cursor.execute('SELECT id, doc_id, parent_chunk_id, sequence_id, chunk_text FROM abstractive_summary')
+cursor.execute('SELECT id, doc_id, parent_chunk_id, sequence_id, chunk_text, chunk_summary FROM abstractive_summary')
 chunks = cursor.fetchall()
 
 # Vectorize and upload to Qdrant
-for chunk_id, doc_id, parent_chunk_id, sequence_id, chunk_text in chunks:
+for chunk_id, doc_id, parent_chunk_id, sequence_id, chunk_text, chunk_summary in chunks:
     print(f"Processing chunk ID: {chunk_id}")
     
     # Generate the vector representation of the chunk
-    chunk_vector = embedding_model.encode(chunk_text).tolist()
+    chunk_vector = embedding_model.encode(chunk_summary).tolist()
+
+    # Get QA pair associated with this chunk
+    cursor.execute(f"SELECT question, answer FROM qa WHERE chunk_id = '{chunk_id}'")
+    question, answer = cursor.fetchone()
+
+    # Get glossary term associated with this chunk
+    cursor.execute(f"SELECT term, definition FROM glossary WHERE chunk_id = '{chunk_id}'")
+    term, definition = cursor.fetchall()
     
     # Create a Qdrant point
     point = PointStruct(
@@ -47,62 +55,17 @@ for chunk_id, doc_id, parent_chunk_id, sequence_id, chunk_text in chunks:
             "document_id": doc_id,
             "parent_chunk_id": parent_chunk_id,
             "sequence_id": sequence_id,
-            "chunk_text": chunk_text  # Optionally store the text in Qdrant
-        }
-    )
-    
-    # Upload the point to Qdrant
-    qdrant_client.upsert(collection_name=COLLECTION_NAME, points=[point])
-
-# Fetch all QA pairs from the qa table
-cursor.execute('SELECT id, doc_id, question, answer FROM qa')
-qa = cursor.fetchall()
-# Vectorize and upload to Qdrant
-for qa_id, doc_id, question, answer in qa:
-    print(f"Processing QA ID: {qa_id}")
-    
-    # Generate the vector representation of the chunk
-    qa_vector = embedding_model.encode(question + " " + answer).tolist()
-    
-    # Create a Qdrant point
-    point = PointStruct(
-        id=qa_id,  # Use the chunk ID as the point ID
-        vector=qa_vector,
-        payload={
-            "chunk_id": qa_id,
-            "document_id": doc_id,
+            "chunk_text": chunk_text,  # Optionally store the text in Qdrant
+            "chunk_summary": chunk_summary,
             "question": question,
             "answer": answer,
+            "term": term,
+            "definition": definition
         }
     )
     
     # Upload the point to Qdrant
     qdrant_client.upsert(collection_name=COLLECTION_NAME, points=[point])
-
-# Fetch all glossary pairs from the glossary table
-# cursor.execute('SELECT id, doc_id, term, definition FROM glossary')
-# glossary = cursor.fetchall()
-# # Vectorize and upload to Qdrant
-# for glossary_id, doc_id, term, definition in glossary:
-#     print(f"Processing glossary ID: {glossary_id}")
-    
-#     # Generate the vector representation of the chunk
-#     glossary_vector = embedding_model.encode(term + " " + definition).tolist()
-    
-#     # Create a Qdrant point
-#     point = PointStruct(
-#         id=glossary_id,  # Use the chunk ID as the point ID
-#         vector=glossary_vector,
-#         payload={
-#             "chunk_id": glossary_id,
-#             "document_id": doc_id,
-#             "term": term,
-#             "definition": definition,
-#         }
-#     )
-    
-#     # Upload the point to Qdrant
-#     qdrant_client.upsert(collection_name=COLLECTION_NAME, points=[point])
 
 print(f"All chunks have been vectorized and uploaded to the Qdrant collection '{COLLECTION_NAME}'.")
 

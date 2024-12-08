@@ -76,7 +76,7 @@ def summarize_text(raw_text):
     print("Summary completed.")
     return summary
 
-for doc_id, raw_text in documents[:5]:
+for doc_id, raw_text in documents:
     print(f"Processing document ID: {doc_id}")
     
     # Generate parent chunks

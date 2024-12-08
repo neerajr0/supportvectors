@@ -1,16 +1,5 @@
 import streamlit as st
-from qdrant_client import QdrantClient
-from sentence_transformers import SentenceTransformer
-
-# Qdrant setup
-QDRANT_HOST = "localhost"  # Replace with your Qdrant instance address
-QDRANT_PORT = 6333         # Default port for Qdrant
-
-# Initialize Qdrant client
-qdrant_client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
-
-# Embedding model setup (using SentenceTransformers as an example)
-embedding_model = SentenceTransformer('all-MiniLM-L6-v2')  # Replace with your desired model
+from retrieve_and_generate import retrieve_results, generate_response
 
 # Streamlit UI
 st.title("Qdrant Query Interface")
@@ -30,15 +19,8 @@ collection_option = st.sidebar.selectbox(
 # Search on button click
 if st.button("Search") and query:
     with st.spinner("Searching..."):
-        # Generate vector for the user query
-        query_vector = embedding_model.encode(query).tolist()
-        
-        # Perform a similarity search in Qdrant
-        search_results = qdrant_client.search(
-            collection_name=collection_option,
-            query_vector=query_vector,
-            limit=5,  # Return top 5 results
-        )
+
+        search_results = retrieve_results(query, collection_option)
         
         # Display results
         st.subheader("Search Results")
@@ -48,6 +30,8 @@ if st.button("Search") and query:
                 st.write(f"**Similarity Score:** {result.score:.2f}")
                 st.write(f"**Payload:** {result.payload}")
                 st.write("---")
+                generated_response = generate_response(query, result.payload)
+                st.write(f"**Generated response for this search result**: {generated_response}")
         else:
             st.write("No results found. Try a different query.")
 

@@ -1,10 +1,10 @@
 ###CONTEXT 
-You are given a transcript of a lecture on AI topics. The audience for the lectures is experienced professionals who are learning AI technologies to enhance their professional capabilities. The lectures typically last between an hour to three hours (or between 10000 words to 40000 words), and comprise of research paper readings as well as explanations of key ideas and concepts about a topic.
+You are given a text snippet of a transcript of a lecture on AI topics. The audience for the lectures is experienced professionals who are learning AI technologies to enhance their professional capabilities. The lectures typically last between an hour to three hours (or between 10000 words to 40000 words), and comprise of research paper readings as well as explanations of key ideas and concepts about a topic.
 ###OBJECTIVE 
-Create a list of question and answer pairs (Q/A) from the transcript. The Q/A should cover all the main ideas and concepts in the transcript. Generate 20 Q/A pairs. Ensure that the questions are insightful and allows the audience to quickly learn the key ideas covered in the transcript.
+Create a single question/answer pair (Q/A) from the text snippet. The Q/A should cover all the main ideas and concepts in the text snippet. Generate EXACTLY ONE Q/A pair. Ensure that the question is insightful and allows the audience to quickly learn the key ideas covered in the text snippet.
 ###STYLE 
-Generate the Q/A pairs in JSON format. Use the below as an example:
-[{"question": Here is the question?, "answer": Here is the answer.}, {"question": Question 2?, "answer": Answer 2.}]
+Return the Q/A pair in JSON format. Use the below as an example:
+{"question": Here is the question?, "answer": Here is the answer.}
 ###TONE 
 Concise, helpful, professional. Along the lines of a study guide.
 ###AUDIENCE 
