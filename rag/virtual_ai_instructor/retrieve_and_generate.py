@@ -37,7 +37,15 @@ def generate_response(query, query_result):
     generate a response that answers the query using the 
     info in the query result.
 
-    Implement using an LLM like Ollama or GPT-4
+    Fields in the query_result object that might be useful:
+    chunk_text
+    chunk_summary
+    question
+    answer
+    term
+    definition
+
+    Implement using an LLM like Ollama or GPT-4.
     """
     pass
         
